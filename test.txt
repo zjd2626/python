@@ -1,0 +1,53 @@
+1.匹配文件"test.html" 中<tr></tr>标签，并按如下格式输出<tr></tr>标签之间的内容：
+----------------------------
+  姓名:     张三
+  年龄:     18
+  性别:     男
+  爱好:     篮球     唱歌     电影
+
+#coding=utf-8
+
+from selenium import webdriver
+from time import sleep
+
+dr=webdriver.Firefox()
+dr.maximize_window()
+dr.implicitly_wait(30)
+dr.get("file:///D:/我的文档/Downloads/test.html")
+tag_tr=dr.find_elements_by_tag_name("tr")
+
+for i in range(1,len(tag_tr)+1):
+    thname=dr.find_element_by_xpath("//tr[%d]/th" %i).text
+    print(thname,"\t",end='')
+    tag_td=dr.find_elements_by_xpath("//tr[%d]/td" %i)
+    for j in range(1,len(tag_td)+1):
+        td=dr.find_elements_by_xpath("//tr[%d]/td" %i)
+        for k in range(1,len(td)+1):
+            tdname=dr.find_element_by_xpath("//tr[%d]/td[%d]" %(i,k)).text
+            print(tdname,'\t',end='')
+    print("")
+
+2.一个数如果恰好等于它的因子之和，这个数就称为“完数” 找出1000以内的所有完数
+'''
+如果一个数恰好等于它的因子之和，则称该数为“完全数”。它所有的真因子（即除了自身以外的约数）的和（即因子函数），恰好等于它本身。
+请找出1000以内的所有完数
+'''
+
+def is_ws(num):
+    '''
+    判断一个数是否完数
+    :return:
+    '''
+    sum=0
+    for x in range(1,num):
+        if num%x==0:
+            sum+=x
+    if sum==num:
+        return True
+
+list1=[]
+for x in range(1,1000):
+    if is_ws(x):
+        list1.append(x)
+print(list1)
+
