@@ -61,7 +61,7 @@ from time import sleep
 dr = webdriver.Firefox()
 dr.maximize_window()
 dr.implicitly_wait(30)
-dr.get("http://energy.powerone.pispower.com:8081")
+dr.get("http://192.168.105.20:8080")
 
 def test_login(username,password):
     dr.find_element_by_id("userName").clear()
