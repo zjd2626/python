@@ -52,33 +52,86 @@ for x in range(1,1000):
 print(list1)
 
 
-3.
-#coding=utf-8
-
-from selenium import webdriver
-from time import sleep
-
-dr = webdriver.Firefox()
-dr.maximize_window()
-dr.implicitly_wait(30)
-dr.get("http://192.168.105.20:8080")
-
-def test_login(username,password):
-    dr.find_element_by_id("userName").clear()
-    dr.find_element_by_id("userName").send_keys(username)
-    dr.find_element_by_id("password").clear()
-    dr.find_element_by_id("password").send_keys(password)
-    dr.find_element_by_id("msg1").click()
-    if dr.title=='登录':
-        notice = dr.find_element_by_class_name("notice-descript").text
-        print(notice)
-    elif dr.title=='智慧基础云 - 云端IT基础设施':
-        print("登录成功.")
+3.将student.txt中的内容导出到excel中
+student.txt：
+{
+	"1":["张三",150,120,100],
+	"2":["李四",90,99,95],
+	"3":["王五",60,66,68]
+}
 
 
-test_login("","")
-test_login("root","engin")
-test_login("root","engine")
+import json
+import xlwt
+from collections import OrderedDict
 
-dr.quit()
+with open('student.txt', 'r') as f:
+    content = f.read()
+
+# 转化为json，注意转化后的dict的元素位置可能和转化前可能不一样，因此需要ordereddict
+# loads()方法把str对象反序列化为json对象，自定义解码器为ordereddict
+d = json.loads(content, object_pairs_hook=OrderedDict)
+print(d)
+# 初始化xls文件
+file = xlwt.Workbook()
+# 添加sheet,工作表，名字为test
+table = file.add_sheet('test')
+for row, i in enumerate(d):  # 读取所有字典，row为序号，i为字典关键字key
+    print(row,i)
+    table.write(row, 0, i)  # 写入（行号，列号，key)
+    for col, j in enumerate(d[i]):  # col为序号，j为value,有多个，需要迭代
+        print(col,j)
+        table.write(row, col + 1, j)
+
+file.save('student.xls')
+
+
+
+4.敏感词文本文件 filtered_words.txt，里面的内容为以下内容，当用户输入敏感词语时，则打印出 Freedom，否则打印出 Human Rights。
+
+from cmd import Cmd  
+import sys  
+
+'''
+使用cmd模块，
+
+cmd创建的命令解释器循环读取其输入的所有行，解析它们，然后发送命令到一个适当的命令处理器。输入行解析成两部分：命令和任何其他文字。如果用户输入foo bar，foo就是命令，bar就是参数，并且类包含一个名为do_foo（）的方法，程序就会执行do_foo(bar);
+'''  
+  
+class CmdTest(Cmd):  
+    def __init__(self,filename):  # 初始基础类方法  
+        super(CmdTest,self).__init__(filename)  
+        self.intro = '敏感词检测,输入：[d 词汇]；输入：[exit]退出'   #程序提示信息  
+        self.words =self.getData(filename)  
+  
+    def getData(self,filename):  
+        with open(filename,'r') as f:  
+            words = f.read().split()  
+        return words  
+  
+    def do_d(self, line):  
+        if line in self.words:  
+            print('Freedom')  
+        else:  
+            print('Human Rights')  
+  
+    def do_exit(self, line):  # 以do_*开头为命令  
+        print("Exit:", line)  
+        sys.exit()  
+  
+if __name__ == "__main__":  
+    cmd = CmdTest('filtered_words.txt')  
+    cmd.cmdloop()
+
+
+5.敏感词文本文件 filtered_words.txt，当用户输入敏感词语，则用 星号 * 替换，例如当用户输入「北京是个好城市」，则变成「**是个好城市」。
+
+user_input=input('Leave your comments:  ')
+for filter_word in open('filtered_words.txt'):
+    fw=filter_word.rstrip()
+    if fw in user_input:
+        user_input=user_input.replace(fw,len(fw)*'*')  #将user_input在原处进行修改，进行下一次循环查找。
+else:
+    print(user_input)
+
 
